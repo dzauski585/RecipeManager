@@ -1,7 +1,6 @@
-import requests
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from recipe_scrapers import scrape_html  # Import the scraping library
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'  # Update with your actual database URI
@@ -24,7 +23,7 @@ def index():
     meals = Recipe.query.filter_by(category='Meal').all()
     desserts = Recipe.query.filter_by(category='Dessert').all()
     sauces = Recipe.query.filter_by(category='Sauce').all()
-    return render_template('index.html', meals=meals, desserts=desserts, sauces=sauces)
+    return render_template('index.html', meal_recipes=meals, dessert_recipes=desserts, sauce_recipes=sauces)
 
 # Route to view a specific recipe
 @app.route('/recipe/<int:id>')
@@ -36,7 +35,7 @@ def recipe_detail(id):
     return render_template('recipe_detail.html', recipe=recipe, ingredients_list=ingredients_list)
 
 # Route to add a new recipe
-# Route to display the 'Add Recipe' page
+
 @app.route('/add_recipe', methods=['GET', 'POST'])
 def add_recipe():
     if request.method == 'POST':
@@ -67,9 +66,6 @@ def add_recipe():
     # If the request is GET, render the 'Add Recipe' page
     return render_template('add_recipe.html')
 
-# Route to display the index page with all recipes
-
-# Route for scraping recipes from a URL
 
 # Route to edit a recipe
 @app.route('/edit_recipe/<int:id>', methods=['GET', 'POST'])
@@ -92,7 +88,18 @@ def edit_recipe(id):
 
     return render_template('edit_recipe.html', recipe=recipe)
 
-
+@app.route('/delete_recipe/<int:id>', methods=['POST'])
+def delete_recipe(id):
+    recipe = Recipe.query.get_or_404(id)  # Fetch the recipe by ID or return a 404 if not found
+    
+    try:
+        db.session.delete(recipe)  # Delete the recipe from the session
+        db.session.commit()  # Commit the transaction to the database
+        return redirect(url_for('index'))  # Redirect to the index page after deletion
+    except Exception as e:
+        db.session.rollback()  # Rollback the session in case of an error
+        print(f"Error: {e}")
+        return "An error occurred while deleting the recipe.", 500  # Return an error message
 
 if __name__ == '__main__':
     with app.app_context():
