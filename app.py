@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-
+from recipe_scrapers import scrape_html
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'  # Update with your actual database URI
@@ -25,6 +25,63 @@ def index():
     sauces = Recipe.query.filter_by(category='Sauce').all()
     return render_template('index.html', meal_recipes=meals, dessert_recipes=desserts, sauce_recipes=sauces)
 
+# Scraping function
+def scrape_recipe(url):
+    scraper = scrape_html(html=None, org_url=url, online=True, wild_mode=True)
+
+# Extract various parts of the recipe
+    title = scraper.title()
+    ingredients = scraper.ingredients()
+    directions = scraper.instructions()
+    cook_time = scraper.total_time()  # Cook and prep time combined
+    prep_time = scraper.prep_time()
+
+    return {
+        'title': title,
+        'ingredients': ingredients,
+        'directions': directions,
+        'cook_time': cook_time,
+        'prep_time': prep_time,
+    }
+
+# Route to scrape recipe from URL and display it in the 'edit recipe' format
+@app.route('/scrape_recipe', methods=['GET', 'POST'])
+def scrape_recipe_page():
+    if request.method == 'POST':
+        url = request.form['url']
+        scraped_data = scrape_recipe(url)
+        return render_template('edit_scrape.html', scraped_data=scraped_data)
+
+    return render_template('scrape_recipe.html')
+
+# Route to add the scraped recipe to the database
+@app.route('/edit_scrape', methods=['POST'])
+def add_scraped_recipe():
+    # Print the form data to see what it contains
+    print("Form data received:", request.form)
+
+    # Extract data from the form (which contains the scraped data)
+    scraped_data = request.form.to_dict()
+
+    # Ensure there's no 'url' key in the submitted form data
+    if 'url' in scraped_data:
+        print("URL key found in form data:", scraped_data['url'])
+        return "Error: URL key shouldn't be in the form data", 400
+
+    
+    new_recipe = Recipe(
+        title=scraped_data['title'],
+        ingredients=scraped_data['ingredients'],
+        directions=scraped_data['directions'],
+        cook_time=int(scraped_data['cook_time']),
+        prep_time=int(scraped_data['prep_time']),
+        category=scraped_data['category']
+    )
+
+    db.session.add(new_recipe)
+    db.session.commit()
+
+    return redirect(url_for('index'))
 # Route to view a specific recipe
 @app.route('/recipe/<int:id>')
 def recipe_detail(id):
