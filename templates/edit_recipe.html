@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Recipe</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS for Dark Theme -->
+    <style>
+        body.dark-theme {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        .dark-theme .card {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+        .dark-theme a {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-primary">Edit Recipe</h1>
+        </div>
+        <form action="/edit_recipe/{{ recipe.id }}" method="post" class="mb-5">
+            <div class="form-group">
+                <label for="title">Recipe Title</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ recipe.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="ingredients">Ingredients (one per line in the format: "1 cup sugar")</label>
+                <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required>{{ recipe.ingredients }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="directions">Directions</label>
+                <textarea class="form-control" id="directions" name="directions" rows="3" required>{{ recipe.directions }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="cook_time">Cook Time (in minutes)</label>
+                <input type="number" class="form-control" id="cook_time" name="cook_time" value="{{ recipe.cook_time }}" min="0">
+            </div>
+            <div class="form-group">
+                <label for="prep_time">Prep Time (in minutes)</label>
+                <input type="number" class="form-control" id="prep_time" name="prep_time" value="{{ recipe.prep_time }}" min="0">
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select class="form-control" id="category" name="category" required>
+                    <option value="Meal" {% if recipe.category == 'Meal' %}selected{% endif %}>Meal</option>
+                    <option value="Dessert" {% if recipe.category == 'Dessert' %}selected{% endif %}>Dessert</option>
+                    <option value="Sauce" {% if recipe.category == 'Sauce' %}selected{% endif %}>Sauce</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Recipe</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <!-- Bootstrap and JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

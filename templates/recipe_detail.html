@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.title }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS for Dark Theme -->
+    <style>
+        body.dark-theme {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        .dark-theme .card {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+        .dark-theme a {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-primary">{{ recipe.title }}</h1>
+        </div>
+        <div class="card p-4 mb-5">
+            <h3>Ingredients</h3>
+            <ul>
+                {% for ingredient in ingredients_list %}
+                <li>{{ ingredient }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Directions</h3>
+            <p>{{ recipe.directions }}</p>
+
+            <h4>Details</h4>
+            <p><strong>Cook Time:</strong> {{ recipe.cook_time if recipe.cook_time else 'N/A' }} minutes</p>
+            <p><strong>Prep Time:</strong> {{ recipe.prep_time if recipe.prep_time else 'N/A' }} minutes</p>
+            <p><strong>Category:</strong> {{ recipe.category }}</p>
+        </div>
+        <a href="/" class="btn btn-secondary">Back to Recipes</a>
+    </div>
+
+    <!-- Bootstrap and JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
